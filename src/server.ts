@@ -1,4 +1,5 @@
 import express from "express";
+import { ParamsDictionary } from "express-serve-static-core";
 
 import { product, sum } from "./math";
 import { validateOperands } from "./operand.validator";
@@ -10,18 +11,17 @@ app.use("/math", (req, res, next) => {
   next();
 });
 
-app.get("/math/sum", (req, res) => {
-  const x: string = req.query.x as string;
-  const y: string = req.query.y as string;
+type QueryParams = {
+  x: number | string;
+  y: number | string;
+};
 
-  res.send({ result: sum(x, y).toString() });
+app.get<ParamsDictionary, any, any, QueryParams>("/math/sum", (req, res) => {
+  res.send({ result: sum(req.query.x, req.query.y).toString() });
 });
 
-app.get("/math/product", (req, res) => {
-  const x: string = req.query.x as string;
-  const y: string = req.query.y as string;
-
-  res.send({ result: product(x, y).toString() });
+app.get<ParamsDictionary, any, any, QueryParams>("/math/product", (req, res) => {
+  res.send({ result: product(req.query.x, req.query.y).toString() });
 });
 
 app.use(function (err, req, res, next) {
